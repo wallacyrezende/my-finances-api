@@ -1,6 +1,8 @@
 package com.dev.minhasfinancas.model.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,9 @@ public interface LancamentoRepository extends JpaRepository<Lancamento, Long>{
 			@Param("idUsuario") Long idUsuario, 
 			@Param("tipo") TipoLancamentoEnum tipo,
 			@Param("status") StatusLancamentoEnum status);
+
+	@Query( value =
+			"select l from Lancamento l join l.usuario u "
+					+ "where u.id = :idUsuario order by l.id desc" )
+	List<Optional<Lancamento>> ultimosLancamentos(@Param("idUsuario") Long idUsuario);
 }

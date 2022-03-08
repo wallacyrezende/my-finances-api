@@ -1,8 +1,10 @@
 package com.dev.minhasfinancas.api.controller;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,6 +65,15 @@ public class LancamentoController {
 		return service.obterPorId(id)
 				.map( lancamento -> new ResponseEntity( converter(lancamento), HttpStatus.OK) )
 				.orElseGet( () -> new ResponseEntity(HttpStatus.NOT_FOUND) );
+	}
+
+	@GetMapping("/ultimos-lancamentos/{idUsuario}")
+	public ResponseEntity ultimosLancamentos( @PathVariable("idUsuario") @NonNull Long idUsuario ) {
+		List<LancamentoDTO> lancamentos = new LinkedList<>();
+		service.ultimosLancamentos(idUsuario).forEach(lancamento -> {
+			lancamentos.add(converter(lancamento.get()));
+		});
+		return ResponseEntity.ok(lancamentos);
 	}
 	
 	@PostMapping
@@ -135,6 +146,23 @@ public class LancamentoController {
 					.usuario(lancamento.getUsuario().getId())
 					.build();
 					
+	}
+
+	private List<LancamentoDTO> convertList(List<Lancamento> lancamentos) {
+		List<LancamentoDTO> lancamentosDTOs = new LinkedList<>();
+		lancamentos.forEach( lancamento -> {
+			lancamentosDTOs.add(LancamentoDTO.builder()
+					.id(lancamento.getId())
+					.descricao(lancamento.getDescricao())
+					.valor(lancamento.getValor())
+					.mes(lancamento.getMes())
+					.ano(lancamento.getAno())
+					.status(lancamento.getStatus().name())
+					.tipo(lancamento.getTipo().name())
+					.usuario(lancamento.getUsuario().getId())
+					.build());
+		});
+		return lancamentosDTOs;
 	}
 	
 	private Lancamento converter(LancamentoDTO dto) {

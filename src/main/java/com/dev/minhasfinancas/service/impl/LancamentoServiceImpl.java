@@ -60,6 +60,12 @@ public class LancamentoServiceImpl implements LancamentoService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public List<Optional<Lancamento>> ultimosLancamentos(Long idUsuario) {
+		return repository.ultimosLancamentos(idUsuario);
+	}
+
+	@Override
 	public void atualizarStatus(Lancamento lancamento, StatusLancamentoEnum status) {
 		lancamento.setStatus(status);
 		atualizar(lancamento);

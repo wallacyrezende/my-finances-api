@@ -2,6 +2,7 @@ package com.dev.minhasfinancas.service.impl;
 
 import java.util.Optional;
 
+import com.dev.minhasfinancas.api.dto.UserAuthenticated;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,18 +23,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Usuario autenticar(String email, String senha) {
-		Optional<Usuario> usuario = repository.findByEmail(email);
+	public UserAuthenticated autenticar(String email, String password) {
+		Optional<Usuario> user = repository.findByEmail(email);
 		
-		if(!usuario.isPresent()) {
+		if(!user.isPresent()) {
 			throw new ErroAutenticacao("Usuário não encontrado para o e-mail informado.");
 		}
 		
-		if(!usuario.get().getSenha().equals(senha)) {
+		if(!user.get().getSenha().equals(password)) {
 			throw new ErroAutenticacao("Senha inválida.");
 		}
-		
-		return usuario.get();
+
+		return UserAuthenticated.builder()
+				.id(user.get().getId())
+				.name(user.get().getNome())
+				.email(user.get().getEmail())
+				.build();
 	}
 
 	@Override

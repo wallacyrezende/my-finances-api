@@ -2,11 +2,12 @@ package com.dev.minhasfinancas.service;
 
 import java.util.Optional;
 
+import com.dev.minhasfinancas.api.dto.UserAuthenticated;
 import com.dev.minhasfinancas.model.entity.Usuario;
 
 public interface UsuarioService {
-	
-	Usuario autenticar(String email, String senha);
+
+	UserAuthenticated autenticar(String email, String senha);
 	
 	Usuario salvarUsuario(Usuario usuario);
 

@@ -3,6 +3,7 @@ package com.dev.minhasfinancas.api.controller;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import com.dev.minhasfinancas.api.dto.UserAuthenticated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,8 +34,8 @@ public class UsuarioController {
 	public ResponseEntity autenticar( @RequestBody UsuarioDTO dto ) {
 		
 		try {
-			Usuario usuarioAutenticado = service.autenticar(dto.getEmail(), dto.getSenha());
-			return ResponseEntity.ok(usuarioAutenticado);
+			UserAuthenticated userAuthenticated = service.autenticar(dto.getEmail(), dto.getPassword());
+			return ResponseEntity.ok(userAuthenticated);
 		} catch(ErroAutenticacao e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -44,9 +45,9 @@ public class UsuarioController {
 	public ResponseEntity salvar( @RequestBody UsuarioDTO dto ) {
 		
 		Usuario usuario = Usuario.builder()
-						         .nome(dto.getNome())
+						         .nome(dto.getName())
 						         .email(dto.getEmail())
-						         .senha(dto.getSenha())
+						         .senha(dto.getPassword())
 						         .build();
 		try {
 			Usuario usuarioSalvo = service.salvarUsuario(usuario);

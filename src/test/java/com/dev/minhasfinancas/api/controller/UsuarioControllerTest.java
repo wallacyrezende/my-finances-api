@@ -1,9 +1,9 @@
 package com.dev.minhasfinancas.api.controller;
 
+import com.dev.minhasfinancas.api.dto.UserAuthenticated;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.internal.stubbing.answers.ThrowsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,7 +22,6 @@ import com.dev.minhasfinancas.exception.RegraNegocioException;
 import com.dev.minhasfinancas.model.entity.Usuario;
 import com.dev.minhasfinancas.service.LancamentoService;
 import com.dev.minhasfinancas.service.UsuarioService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
@@ -47,10 +46,11 @@ public class UsuarioControllerTest {
 	@Test
 	public void deveAutenticarUmUsuario() throws Exception {
 		//cenario
+		String name = "theo";
 		String email = "usuario@email.com";
 		String senha = "123";
-		UsuarioDTO dto = UsuarioDTO.builder().email(email).senha(senha).build();
-		Usuario usuario = Usuario.builder().id(1l).email(email).senha(senha).build();
+		UsuarioDTO dto = UsuarioDTO.builder().email(email).password(senha).build();
+		UserAuthenticated usuario = UserAuthenticated.builder().id(1l).name(name).email(email).build();
 		Mockito.when(service.autenticar(email, senha)).thenReturn(usuario);
 		String json = new ObjectMapper().writeValueAsString(dto);
 		
@@ -64,7 +64,7 @@ public class UsuarioControllerTest {
 		mvc.perform(request)
 		   .andExpect( MockMvcResultMatchers.status().isOk() )
 		   .andExpect( MockMvcResultMatchers.jsonPath("id").value(usuario.getId()) )
-		   .andExpect( MockMvcResultMatchers.jsonPath("nome").value(usuario.getNome()) )
+		   .andExpect( MockMvcResultMatchers.jsonPath("name").value(usuario.getName()) )
 		   .andExpect( MockMvcResultMatchers.jsonPath("email").value(usuario.getEmail()) );
 	}
 	
@@ -73,7 +73,7 @@ public class UsuarioControllerTest {
 		//cenario
 		String email = "usuario@email.com";
 		String senha = "123";
-		UsuarioDTO dto = UsuarioDTO.builder().email(email).senha(senha).build();
+		UsuarioDTO dto = UsuarioDTO.builder().email(email).password(senha).build();
 
 		Mockito.when(service.autenticar(email, senha)).thenThrow(ErroAutenticacao.class);
 		String json = new ObjectMapper().writeValueAsString(dto);
@@ -94,7 +94,7 @@ public class UsuarioControllerTest {
 		//cenario
 		String email = "usuario@email.com";
 		String senha = "123";
-		UsuarioDTO dto = UsuarioDTO.builder().email(email).senha(senha).build();
+		UsuarioDTO dto = UsuarioDTO.builder().email(email).password(senha).build();
 		Usuario usuario = Usuario.builder().id(1l).email(email).senha(senha).build();
 		
 		Mockito.when(service.salvarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
@@ -119,7 +119,7 @@ public class UsuarioControllerTest {
 		//cenario
 		String email = "usuario@email.com";
 		String senha = "123";
-		UsuarioDTO dto = UsuarioDTO.builder().email(email).senha(senha).build();
+		UsuarioDTO dto = UsuarioDTO.builder().email(email).password(senha).build();
 		
 		Mockito.when(service.salvarUsuario(Mockito.any(Usuario.class))).thenThrow(RegraNegocioException.class);
 		String json = new ObjectMapper().writeValueAsString(dto);

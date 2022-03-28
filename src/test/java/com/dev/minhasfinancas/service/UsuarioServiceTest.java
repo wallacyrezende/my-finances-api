@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
 
+import com.dev.minhasfinancas.api.dto.UserAuthenticated;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,15 +72,15 @@ public class UsuarioServiceTest {
 	public void deveAutenticarUmUsuarioComSucesso() {
 //		cenario
 		String email = "email@email.com";
-		String senha = "senha";
+		String password = "senha";
 		
-		Usuario usuario = Usuario.builder().email(email).senha(senha).id(1l).build();
+		Usuario usuario = Usuario.builder().email(email).senha(password).id(1l).build();
 		Mockito.when(repository.findByEmail(email)).thenReturn(Optional.of(usuario));
 		
 
 		Assertions.assertDoesNotThrow(() -> {
 //			acao
-			Usuario result = service.autenticar(email, senha);
+			UserAuthenticated result = service.autenticar(email, password);
 		
 //			verificacao
 			Assertions.assertNotNull(result);

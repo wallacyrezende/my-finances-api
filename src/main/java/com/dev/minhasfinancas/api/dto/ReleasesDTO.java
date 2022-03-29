@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LancamentoDTO {
+public class ReleasesDTO {
 
 	private Long id;
-	private String descricao;
-	private Integer mes;
-	private Integer ano;
-	private BigDecimal valor;
-	private Long usuario;
-	private String tipo;
+	private String description;
+	private Integer mouth;
+	private Integer year;
+	private BigDecimal value;
+	private Long userId;
+	private String type;
 	private String status;
 }

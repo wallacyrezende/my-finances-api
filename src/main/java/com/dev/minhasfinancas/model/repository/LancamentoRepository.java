@@ -25,5 +25,5 @@ public interface LancamentoRepository extends JpaRepository<Lancamento, Long>{
 	@Query( value =
 			"select l from Lancamento l join l.usuario u "
 					+ "where u.id = :idUsuario order by l.id desc" )
-	List<Optional<Lancamento>> ultimosLancamentos(@Param("idUsuario") Long idUsuario);
+	List<Optional<Lancamento>> lastReleases(@Param("idUsuario") Long idUsuario);
 }

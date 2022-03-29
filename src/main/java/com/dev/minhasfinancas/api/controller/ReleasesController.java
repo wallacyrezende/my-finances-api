@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dev.minhasfinancas.api.dto.AtualizaStatusDTO;
-import com.dev.minhasfinancas.api.dto.LancamentoDTO;
+import com.dev.minhasfinancas.api.dto.ReleasesDTO;
 import com.dev.minhasfinancas.exception.RegraNegocioException;
 import com.dev.minhasfinancas.model.entity.Lancamento;
 import com.dev.minhasfinancas.model.entity.Usuario;
@@ -30,9 +30,9 @@ import com.dev.minhasfinancas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/lancamentos")
+@RequestMapping("/api/releases")
 @RequiredArgsConstructor
-public class LancamentoController {
+public class ReleasesController {
 	
 	private final LancamentoService service;
 	private final UsuarioService usuarioService;
@@ -67,17 +67,17 @@ public class LancamentoController {
 				.orElseGet( () -> new ResponseEntity(HttpStatus.NOT_FOUND) );
 	}
 
-	@GetMapping("/ultimos-lancamentos/{idUsuario}")
-	public ResponseEntity ultimosLancamentos( @PathVariable("idUsuario") @NonNull Long idUsuario ) {
-		List<LancamentoDTO> lancamentos = new LinkedList<>();
-		service.ultimosLancamentos(idUsuario).forEach(lancamento -> {
-			lancamentos.add(converter(lancamento.get()));
+	@GetMapping("/last-releases/{userId}")
+	public ResponseEntity ultimosLancamentos( @PathVariable("userId") @NonNull Long userId ) {
+		List<ReleasesDTO> releases = new LinkedList<>();
+		service.lastReleases(userId).forEach(release -> {
+			releases.add(converter(release.get()));
 		});
-		return ResponseEntity.ok(lancamentos);
+		return ResponseEntity.ok(releases);
 	}
 	
 	@PostMapping
-	public ResponseEntity salvar( @RequestBody LancamentoDTO dto ) {
+	public ResponseEntity salvar( @RequestBody ReleasesDTO dto ) {
 		try {
 			Lancamento lancamento = converter(dto);
 			lancamento = service.salvar(lancamento);
@@ -88,7 +88,7 @@ public class LancamentoController {
 	}
 	
 	@PutMapping("{id}")
-	public ResponseEntity atualizar( @PathVariable("id") Long id, @RequestBody LancamentoDTO dto) {
+	public ResponseEntity atualizar( @PathVariable("id") Long id, @RequestBody ReleasesDTO dto) {
 		return service.obterPorId(id).map( entity -> {
 			
 			try {
@@ -134,53 +134,53 @@ public class LancamentoController {
 				new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.BAD_REQUEST) );
 	}
 	
-	private LancamentoDTO converter(Lancamento lancamento) {
-		return LancamentoDTO.builder()
+	private ReleasesDTO converter(Lancamento lancamento) {
+		return ReleasesDTO.builder()
 					.id(lancamento.getId())
-					.descricao(lancamento.getDescricao())
-					.valor(lancamento.getValor())
-					.mes(lancamento.getMes())
-					.ano(lancamento.getAno())
+					.description(lancamento.getDescricao())
+					.value(lancamento.getValor())
+					.mouth(lancamento.getMes())
+					.year(lancamento.getAno())
 					.status(lancamento.getStatus().name())
-					.tipo(lancamento.getTipo().name())
-					.usuario(lancamento.getUsuario().getId())
+					.type(lancamento.getTipo().name())
+					.userId(lancamento.getUsuario().getId())
 					.build();
 					
 	}
 
-	private List<LancamentoDTO> convertList(List<Lancamento> lancamentos) {
-		List<LancamentoDTO> lancamentosDTOs = new LinkedList<>();
+	private List<ReleasesDTO> convertList(List<Lancamento> lancamentos) {
+		List<ReleasesDTO> lancamentosDTOs = new LinkedList<>();
 		lancamentos.forEach( lancamento -> {
-			lancamentosDTOs.add(LancamentoDTO.builder()
+			lancamentosDTOs.add(ReleasesDTO.builder()
 					.id(lancamento.getId())
-					.descricao(lancamento.getDescricao())
-					.valor(lancamento.getValor())
-					.mes(lancamento.getMes())
-					.ano(lancamento.getAno())
+					.description(lancamento.getDescricao())
+					.value(lancamento.getValor())
+					.mouth(lancamento.getMes())
+					.year(lancamento.getAno())
 					.status(lancamento.getStatus().name())
-					.tipo(lancamento.getTipo().name())
-					.usuario(lancamento.getUsuario().getId())
+					.type(lancamento.getTipo().name())
+					.userId(lancamento.getUsuario().getId())
 					.build());
 		});
 		return lancamentosDTOs;
 	}
 	
-	private Lancamento converter(LancamentoDTO dto) {
+	private Lancamento converter(ReleasesDTO dto) {
 		Lancamento lancamento = new Lancamento();
 		lancamento.setId(dto.getId());
-		lancamento.setDescricao(dto.getDescricao());
-		lancamento.setAno(dto.getAno());
-		lancamento.setMes(dto.getMes());
-		lancamento.setValor(dto.getValor());
+		lancamento.setDescricao(dto.getDescription());
+		lancamento.setAno(dto.getYear());
+		lancamento.setMes(dto.getMouth());
+		lancamento.setValor(dto.getValue());
 		
 		Usuario usuario = usuarioService
-			.obterPorId(dto.getUsuario())
+			.obterPorId(dto.getUserId())
 			.orElseThrow( () -> new RegraNegocioException("Usuário não encontrado para o Id informado."));
 		
 		lancamento.setUsuario(usuario);
 		
-		if(dto.getTipo() != null)
-			lancamento.setTipo(TipoLancamentoEnum.valueOf(dto.getTipo()));
+		if(dto.getType() != null)
+			lancamento.setTipo(TipoLancamentoEnum.valueOf(dto.getType()));
 		if(dto.getStatus() != null)
 			lancamento.setStatus(StatusLancamentoEnum.valueOf(dto.getStatus()));
 		

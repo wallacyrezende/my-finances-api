@@ -61,8 +61,8 @@ public class LancamentoServiceImpl implements LancamentoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Optional<Lancamento>> ultimosLancamentos(Long idUsuario) {
-		return repository.ultimosLancamentos(idUsuario);
+	public List<Optional<Lancamento>> lastReleases(Long idUsuario) {
+		return repository.lastReleases(idUsuario);
 	}
 
 	@Override

@@ -25,5 +25,5 @@ public interface LancamentoService {
 	
 	BigDecimal obterSaldoPorUsuario(Long id);
 
-	List<Optional<Lancamento>> ultimosLancamentos(Long idUsuario);
+	List<Optional<Lancamento>> lastReleases(Long idUsuario);
 }

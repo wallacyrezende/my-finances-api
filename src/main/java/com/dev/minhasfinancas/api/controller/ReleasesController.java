@@ -76,7 +76,7 @@ public class ReleasesController {
 		return ResponseEntity.ok(releases);
 	}
 	
-	@PostMapping
+	@PostMapping("/create-release")
 	public ResponseEntity salvar( @RequestBody ReleasesDTO dto ) {
 		try {
 			Lancamento lancamento = converter(dto);

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.dev.minhasfinancas.model.entity.Lancamento;
 import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
+import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
 
 public interface LancamentoService {
 	
@@ -26,4 +27,6 @@ public interface LancamentoService {
 	BigDecimal obterSaldoPorUsuario(Long id);
 
 	List<Optional<Lancamento>> lastReleases(Long idUsuario);
+
+	BigDecimal getExtractByReleaseType(Long userId, TipoLancamentoEnum releaseType);
 }

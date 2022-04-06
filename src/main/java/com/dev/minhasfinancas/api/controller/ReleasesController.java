@@ -49,7 +49,7 @@ public class ReleasesController {
 		lancamentoFiltro.setMes(mes);
 		lancamentoFiltro.setAno(ano);
 		
-		Optional<Usuario> usuario = usuarioService.obterPorId(idUsuario);
+		Optional<Usuario> usuario = usuarioService.getById(idUsuario);
 		if(!usuario.isPresent()) {
 			return ResponseEntity.badRequest().body("Não foi possível realizar a consulta.");
 		} else {
@@ -174,7 +174,7 @@ public class ReleasesController {
 		lancamento.setValor(dto.getValue());
 		
 		Usuario usuario = usuarioService
-			.obterPorId(dto.getUserId())
+			.getById(dto.getUserId())
 			.orElseThrow( () -> new RegraNegocioException("Usuário não encontrado para o Id informado."));
 		
 		lancamento.setUsuario(usuario);

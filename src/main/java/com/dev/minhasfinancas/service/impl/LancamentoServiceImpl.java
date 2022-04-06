@@ -66,6 +66,13 @@ public class LancamentoServiceImpl implements LancamentoService {
 	}
 
 	@Override
+	@Transactional
+	public BigDecimal getExtractByReleaseType(Long userId, TipoLancamentoEnum releaseType) {
+		BigDecimal extract = repository.obterSaldoPorTipoLancamentoEUsuarioEStatus(userId, releaseType, StatusLancamentoEnum.EFETIVADO);
+		return (extract == null) ? BigDecimal.ZERO : extract;
+	}
+
+	@Override
 	public void atualizarStatus(Lancamento lancamento, StatusLancamentoEnum status) {
 		lancamento.setStatus(status);
 		atualizar(lancamento);

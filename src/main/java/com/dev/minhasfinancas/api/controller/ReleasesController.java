@@ -77,7 +77,7 @@ public class ReleasesController {
 	}
 	
 	@PostMapping("/create-release")
-	public ResponseEntity salvar( @RequestBody ReleasesDTO dto ) {
+	public ResponseEntity create(@RequestBody ReleasesDTO dto ) {
 		try {
 			Lancamento lancamento = converter(dto);
 			lancamento = service.salvar(lancamento);
@@ -88,7 +88,7 @@ public class ReleasesController {
 	}
 	
 	@PutMapping("{id}")
-	public ResponseEntity atualizar( @PathVariable("id") Long id, @RequestBody ReleasesDTO dto) {
+	public ResponseEntity update(@PathVariable("id") Long id, @RequestBody ReleasesDTO dto) {
 		return service.obterPorId(id).map( entity -> {
 			
 			try {
@@ -105,17 +105,17 @@ public class ReleasesController {
 				new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.BAD_REQUEST) );
 	}
 	
-	@PutMapping("{id}/atualiza-status")
-	public ResponseEntity atualizarStatus( @PathVariable("id") Long id, @RequestBody AtualizaStatusDTO dto ) {
+	@PutMapping("{id}/update-status")
+	public ResponseEntity updateStatus(@PathVariable("id") Long id, @RequestParam("status") StatusLancamentoEnum status) {
 		return service.obterPorId(id).map( entity -> {
-			StatusLancamentoEnum statusSelecionado = StatusLancamentoEnum.valueOf(dto.getStatus());
+			StatusLancamentoEnum selectedStatus = StatusLancamentoEnum.valueOf(status.name());
 			
-			if(statusSelecionado == null) {
+			if(selectedStatus == null) {
 				return ResponseEntity.badRequest().body("Não foi possível atualizar o status do lançamentos, informe um status válido");
 			}
 			
 			try {
-				entity.setStatus(statusSelecionado);
+				entity.setStatus(selectedStatus);
 				service.atualizar(entity);
 				return ResponseEntity.ok(entity);
 			} catch (RegraNegocioException e) {

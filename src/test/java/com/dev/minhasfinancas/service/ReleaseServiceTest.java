@@ -19,16 +19,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.dev.minhasfinancas.exception.RegraNegocioException;
-import com.dev.minhasfinancas.model.entity.Lancamento;
+import com.dev.minhasfinancas.model.entity.Release;
 import com.dev.minhasfinancas.model.entity.Usuario;
 import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
 import com.dev.minhasfinancas.model.repository.LancamentoRepository;
-import com.dev.minhasfinancas.model.repository.LancamentoRepositoryTest;
+import com.dev.minhasfinancas.model.repository.ReleaseRepositoryTest;
 import com.dev.minhasfinancas.service.impl.LancamentoServiceImpl;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class LancamentoServiceTest {
+public class ReleaseServiceTest {
 	
 	@SpyBean
 	LancamentoServiceImpl service;
@@ -39,16 +39,16 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveSalvarUmLancamento() {
 		//cenario
-		Lancamento lancamentoASalvar = LancamentoRepositoryTest.criarLancamento();
+		Release lancamentoASalvar = ReleaseRepositoryTest.criarLancamento();
 		Mockito.doNothing().when(service).validar(lancamentoASalvar);
 		
-		Lancamento lancamentoSalvo = LancamentoRepositoryTest.criarLancamento();
+		Release lancamentoSalvo = ReleaseRepositoryTest.criarLancamento();
 		lancamentoSalvo.setId(1l);
 		lancamentoSalvo.setStatus(StatusLancamentoEnum.PENDENTE);
 		Mockito.when(repository.save(lancamentoASalvar)).thenReturn(lancamentoSalvo);
 		
 		//execucao
-		Lancamento lancamento = service.salvar(lancamentoASalvar);
+		Release lancamento = service.salvar(lancamentoASalvar);
 		
 		//verificacao
 		Assertions.assertThat(lancamento.getId()).isEqualTo(lancamentoSalvo.getId());
@@ -57,7 +57,7 @@ public class LancamentoServiceTest {
 	
 	@Test
 	public void naoDeveSalvarUmLancamentoQuandoHouverErroDeValidacao() {
-		Lancamento lancamentoASalvar = LancamentoRepositoryTest.criarLancamento();
+		Release lancamentoASalvar = ReleaseRepositoryTest.criarLancamento();
 		Mockito.doThrow(RegraNegocioException.class).when(service).validar(lancamentoASalvar);
 		
 		Assertions.catchThrowableOfType( () -> service.salvar(lancamentoASalvar), RegraNegocioException.class);
@@ -67,7 +67,7 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveAtualizarUmLancamento() {
 		//cenario
-		Lancamento lancamentoSalvo = LancamentoRepositoryTest.criarLancamento();
+		Release lancamentoSalvo = ReleaseRepositoryTest.criarLancamento();
 		lancamentoSalvo.setId(1l);
 		lancamentoSalvo.setStatus(StatusLancamentoEnum.PENDENTE);
 		
@@ -84,7 +84,7 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveLancarErroAoTentarAtualizarUmLancamentoQueAindaNaoFoiSalvo() {
 		//cenario
-		Lancamento lancamentoASalvar = LancamentoRepositoryTest.criarLancamento();
+		Release lancamentoASalvar = ReleaseRepositoryTest.criarLancamento();
 		
 		//execucao
 		Assertions.catchThrowableOfType( () -> service.atualizar(lancamentoASalvar), NullPointerException.class);
@@ -95,7 +95,7 @@ public class LancamentoServiceTest {
 	
 	@Test
 	public void deveDeletarUmLancamento() {
-		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		Release lancamento = ReleaseRepositoryTest.criarLancamento();
 		lancamento.setId(1l);
 		
 		service.deletar(lancamento);
@@ -105,7 +105,7 @@ public class LancamentoServiceTest {
 	
 	@Test
 	public void deveLancarErroAoTentarDeletarUmLancamentoQueAindaNaoFoiSalvo() {
-		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		Release lancamento = ReleaseRepositoryTest.criarLancamento();
 		
 		Assertions.catchThrowableOfType(() -> service.deletar(lancamento), NullPointerException.class);
 		
@@ -114,13 +114,13 @@ public class LancamentoServiceTest {
 	
 	@Test
 	public void deveFiltrarLancamentos() {
-		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		Release lancamento = ReleaseRepositoryTest.criarLancamento();
 		lancamento.setId(1l);
 		
-		List<Lancamento> lista = Arrays.asList(lancamento);
+		List<Release> lista = Arrays.asList(lancamento);
 		Mockito.when( repository.findAll(Mockito.any(Example.class))).thenReturn(lista);
 		
-		List<Lancamento> resultado = service.buscar(lancamento);
+		List<Release> resultado = service.buscar(lancamento);
 		
 		Assertions
 			.assertThat(resultado)
@@ -131,7 +131,7 @@ public class LancamentoServiceTest {
 	
 	@Test
 	public void deveAtualizarOStatusDeUmLancamento() {
-		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		Release lancamento = ReleaseRepositoryTest.criarLancamento();
 		lancamento.setId(1l);
 		lancamento.setStatus(StatusLancamentoEnum.PENDENTE);
 		
@@ -148,12 +148,12 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveObterUmLancamentoPorId() {
 		Long id = 1l;
-		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		Release lancamento = ReleaseRepositoryTest.criarLancamento();
 		lancamento.setId(id);
 		
 		Mockito.when(repository.findById(id)).thenReturn(Optional.of(lancamento));
 		
-		Optional<Lancamento> resultado = service.obterPorId(id);
+		Optional<Release> resultado = service.obterPorId(id);
 		
 		Assertions.assertThat(resultado.isPresent()).isTrue();
 	}
@@ -161,65 +161,65 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveRetornarVazioQuandoOLancamentoNaoExiste() {
 		Long id = 1l;
-		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		Release lancamento = ReleaseRepositoryTest.criarLancamento();
 		lancamento.setId(id);
 		
 		Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
 		
-		Optional<Lancamento> resultado = service.obterPorId(id);
+		Optional<Release> resultado = service.obterPorId(id);
 		
 		Assertions.assertThat(resultado.isPresent()).isFalse();
 	}
 	
 	@Test
 	public void deveLancarErrosAoValidarUmLancamento() {
-		Lancamento lancamento = new Lancamento();
+		Release release = new Release();
 		
-		Throwable erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		Throwable erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe uma Descrição válida.");
 		
-		lancamento.setDescricao("");
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setDescricao("");
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe uma Descrição válida.");
 		
-		lancamento.setDescricao("Salário");
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setDescricao("Salário");
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Mês válido.");
 		
-		lancamento.setMes(0);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setMes(0);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Mês válido.");
 		
-		lancamento.setMes(13);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setMes(13);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Mês válido.");
 		
-		lancamento.setMes(1);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setMes(1);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Ano válido.");
 		
-		lancamento.setAno(202);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setAno(202);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Ano válido.");
 		
-		lancamento.setAno(2020);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setAno(2020);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Usuário.");
 		
-		lancamento.setUsuario(new Usuario());
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setUsuario(new Usuario());
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Usuário.");
 		
-		lancamento.getUsuario().setId(1l);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.getUsuario().setId(1l);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Valor válido.");
 		
-		lancamento.setValor(BigDecimal.ZERO);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setValor(BigDecimal.ZERO);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Valor válido.");
 		
-		lancamento.setValor(BigDecimal.ONE);
-		erro = Assertions.catchThrowable( () -> service.validar(lancamento) );
+		release.setValor(BigDecimal.ONE);
+		erro = Assertions.catchThrowable( () -> service.validar(release) );
 		Assertions.assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Tipo de lançamento.");
 	}
 }

@@ -1,32 +1,36 @@
 package com.dev.minhasfinancas.service;
 
+import com.dev.minhasfinancas.api.dto.PaginatedResponseDTO;
+import com.dev.minhasfinancas.api.dto.ReleasesDTO;
+import com.dev.minhasfinancas.model.entity.Release;
+import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
+import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import com.dev.minhasfinancas.model.entity.Lancamento;
-import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
-import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
-
 public interface LancamentoService {
 	
-	Lancamento salvar(Lancamento lancamento);
+	Release salvar(Release lancamento);
 	
-	Lancamento atualizar(Lancamento lancamento);
+	Release atualizar(Release lancamento);
 	
-	void deletar(Lancamento lancamento);
+	void deletar(Release lancamento);
 	
-	List<Lancamento> buscar(Lancamento lancamentoFiltro);
+	List<Release> buscar(Release lancamentoFiltro);
 	
-	void atualizarStatus(Lancamento lancamento, StatusLancamentoEnum status);
+	void atualizarStatus(Release lancamento, StatusLancamentoEnum status);
 	
-	void validar(Lancamento lancamento);
+	void validar(Release lancamento);
 	
-	Optional<Lancamento> obterPorId(Long id);
+	Optional<Release> obterPorId(Long id);
 	
 	BigDecimal obterSaldoPorUsuario(Long id);
 
-	List<Optional<Lancamento>> lastReleases(Long idUsuario);
+	List<Optional<Release>> lastReleases(Long idUsuario);
 
 	BigDecimal getExtractByReleaseType(Long userId, TipoLancamentoEnum releaseType);
+
+	PaginatedResponseDTO<ReleasesDTO> getReleasesPaginated(Long userId, Integer page, Integer size);
 }

@@ -1,34 +1,43 @@
 package com.dev.minhasfinancas.service.impl;
 
+import com.dev.minhasfinancas.api.dto.PaginatedResponseDTO;
+import com.dev.minhasfinancas.api.dto.ReleasesDTO;
+import com.dev.minhasfinancas.exception.RegraNegocioException;
+import com.dev.minhasfinancas.model.entity.Release;
+import com.dev.minhasfinancas.model.entity.Usuario;
+import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
+import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
+import com.dev.minhasfinancas.model.repository.LancamentoRepository;
+import com.dev.minhasfinancas.service.LancamentoService;
+import com.dev.minhasfinancas.service.UsuarioService;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.StringMatcher;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.dev.minhasfinancas.exception.RegraNegocioException;
-import com.dev.minhasfinancas.model.entity.Lancamento;
-import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
-import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
-import com.dev.minhasfinancas.model.repository.LancamentoRepository;
-import com.dev.minhasfinancas.service.LancamentoService;
-
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LancamentoServiceImpl implements LancamentoService {
 
-	private LancamentoRepository repository;
-	
-	public LancamentoServiceImpl(LancamentoRepository repository) {
-		this.repository = repository;
-	}
+	private final LancamentoRepository repository;
+	private final @NonNull UsuarioService usuarioService;
+
 	@Override
 	@Transactional
-	public Lancamento salvar(Lancamento lancamento) {
+	public Release salvar(Release lancamento) {
 		validar(lancamento);
 		lancamento.setStatus(StatusLancamentoEnum.PENDENTE);
 		return repository.save(lancamento);
@@ -36,7 +45,7 @@ public class LancamentoServiceImpl implements LancamentoService {
 
 	@Override
 	@Transactional
-	public Lancamento atualizar(Lancamento lancamento) {
+	public Release atualizar(Release lancamento) {
 		Objects.requireNonNull(lancamento.getId());
 		validar(lancamento);
 		return repository.save(lancamento);
@@ -44,14 +53,14 @@ public class LancamentoServiceImpl implements LancamentoService {
 
 	@Override
 	@Transactional
-	public void deletar(Lancamento lancamento) {
+	public void deletar(Release lancamento) {
 		Objects.requireNonNull(lancamento.getId());
 		repository.delete(lancamento);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Lancamento> buscar(Lancamento lancamentoFiltro) {
+	public List<Release> buscar(Release lancamentoFiltro) {
 		Example example = Example.of(lancamentoFiltro,
 				ExampleMatcher.matching()
 					.withIgnoreCase()
@@ -61,25 +70,37 @@ public class LancamentoServiceImpl implements LancamentoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Optional<Lancamento>> lastReleases(Long idUsuario) {
+	public List<Optional<Release>> lastReleases(Long idUsuario) {
 		return repository.lastReleases(idUsuario);
 	}
 
 	@Override
 	@Transactional
 	public BigDecimal getExtractByReleaseType(Long userId, TipoLancamentoEnum releaseType) {
-		BigDecimal extract = repository.obterSaldoPorTipoLancamentoEUsuarioEStatus(userId, releaseType, StatusLancamentoEnum.EFETIVADO);
+		BigDecimal extract = repository.getBalanceByReleaseTypeUserAndStatus(userId, releaseType, StatusLancamentoEnum.EFETIVADO);
 		return (extract == null) ? BigDecimal.ZERO : extract;
 	}
 
 	@Override
-	public void atualizarStatus(Lancamento lancamento, StatusLancamentoEnum status) {
+	@Transactional
+	public PaginatedResponseDTO<ReleasesDTO> getReleasesPaginated(Long userId, Integer page, Integer size) {
+		Page<ReleasesDTO> pageReleases = Page.empty();
+		Optional<Usuario> user = usuarioService.getById(userId);
+		if (user.isPresent()) {
+			Pageable pageable = PageRequest.of(page, size, Sort.by("ano","mes","id").descending());
+			pageReleases = repository.findAll(user.get().getId(), pageable);
+		}
+		return new PaginatedResponseDTO<ReleasesDTO>(pageReleases.getContent(), pageReleases.getTotalElements());
+	}
+
+	@Override
+	public void atualizarStatus(Release lancamento, StatusLancamentoEnum status) {
 		lancamento.setStatus(status);
 		atualizar(lancamento);
 	}
 	
 	@Override
-	public void validar(Lancamento lancamento) {
+	public void validar(Release lancamento) {
 		if(lancamento.getDescricao() == null || lancamento.getDescricao().trim().equals("")) {
 			throw new RegraNegocioException("Informe uma Descrição válida.");
 		}
@@ -106,15 +127,15 @@ public class LancamentoServiceImpl implements LancamentoService {
 	}
 	
 	@Override
-	public Optional<Lancamento> obterPorId(Long id) {
+	public Optional<Release> obterPorId(Long id) {
 		return repository.findById(id);
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	public BigDecimal obterSaldoPorUsuario(Long id) {
-		BigDecimal receitas = repository.obterSaldoPorTipoLancamentoEUsuarioEStatus(id, TipoLancamentoEnum.RECEITA, StatusLancamentoEnum.EFETIVADO);
-		BigDecimal despesas = repository.obterSaldoPorTipoLancamentoEUsuarioEStatus(id, TipoLancamentoEnum.DESPESA, StatusLancamentoEnum.EFETIVADO);
+		BigDecimal receitas = repository.getBalanceByReleaseTypeUserAndStatus(id, TipoLancamentoEnum.RECEITA, StatusLancamentoEnum.EFETIVADO);
+		BigDecimal despesas = repository.getBalanceByReleaseTypeUserAndStatus(id, TipoLancamentoEnum.DESPESA, StatusLancamentoEnum.EFETIVADO);
 		
 		if(receitas == null)
 			receitas = BigDecimal.ZERO;

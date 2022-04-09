@@ -1,10 +1,14 @@
 package com.dev.minhasfinancas.api.controller;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
+import com.dev.minhasfinancas.api.dto.ReleasesDTO;
+import com.dev.minhasfinancas.exception.RegraNegocioException;
+import com.dev.minhasfinancas.model.entity.Release;
+import com.dev.minhasfinancas.model.entity.Usuario;
+import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
+import com.dev.minhasfinancas.service.LancamentoService;
+import com.dev.minhasfinancas.service.UsuarioService;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,17 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dev.minhasfinancas.api.dto.AtualizaStatusDTO;
-import com.dev.minhasfinancas.api.dto.ReleasesDTO;
-import com.dev.minhasfinancas.exception.RegraNegocioException;
-import com.dev.minhasfinancas.model.entity.Lancamento;
-import com.dev.minhasfinancas.model.entity.Usuario;
-import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
-import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
-import com.dev.minhasfinancas.service.LancamentoService;
-import com.dev.minhasfinancas.service.UsuarioService;
-
-import lombok.RequiredArgsConstructor;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/releases")
@@ -44,7 +40,7 @@ public class ReleasesController {
 			@RequestParam(value = "ano", required = false) Integer ano,
 			@RequestParam("usuario") Long idUsuario
 			) {
-		Lancamento lancamentoFiltro = new Lancamento();
+		Release lancamentoFiltro = new Release();
 		lancamentoFiltro.setDescricao(descricao);
 		lancamentoFiltro.setMes(mes);
 		lancamentoFiltro.setAno(ano);
@@ -56,7 +52,7 @@ public class ReleasesController {
 			lancamentoFiltro.setUsuario(usuario.get());
 		}
 		
-		List<Lancamento> lancamentos = service.buscar(lancamentoFiltro);
+		List<Release> lancamentos = service.buscar(lancamentoFiltro);
 		return ResponseEntity.ok(lancamentos);
 	}
 	
@@ -75,11 +71,18 @@ public class ReleasesController {
 		});
 		return ResponseEntity.ok(releases);
 	}
+
+	@GetMapping("{userId}/releases-paginated")
+	public ResponseEntity releasesPaginated( @PathVariable("userId") @NonNull Long userId,
+												@RequestParam("page") Integer page,
+												@RequestParam("size") Integer size) {
+		return ResponseEntity.ok(service.getReleasesPaginated(userId, page, size));
+	}
 	
 	@PostMapping("/create-release")
 	public ResponseEntity create(@RequestBody ReleasesDTO dto ) {
 		try {
-			Lancamento lancamento = converter(dto);
+			Release lancamento = converter(dto);
 			lancamento = service.salvar(lancamento);
 			return new ResponseEntity(lancamento, HttpStatus.CREATED);
 		} catch (RegraNegocioException e) {
@@ -92,7 +95,7 @@ public class ReleasesController {
 		return service.obterPorId(id).map( entity -> {
 			
 			try {
-				Lancamento lancamento = converter(dto);
+				Release lancamento = converter(dto);
 				lancamento.setId(entity.getId());
 				service.atualizar(lancamento);
 				
@@ -134,21 +137,21 @@ public class ReleasesController {
 				new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.BAD_REQUEST) );
 	}
 	
-	private ReleasesDTO converter(Lancamento lancamento) {
+	private ReleasesDTO converter(Release lancamento) {
 		return ReleasesDTO.builder()
 					.id(lancamento.getId())
 					.description(lancamento.getDescricao())
 					.value(lancamento.getValor())
 					.mouth(lancamento.getMes())
 					.year(lancamento.getAno())
-					.status(lancamento.getStatus().name())
-					.type(lancamento.getTipo().name())
+					.status(lancamento.getStatus())
+					.type(lancamento.getTipo())
 					.userId(lancamento.getUsuario().getId())
 					.build();
 					
 	}
 
-	private List<ReleasesDTO> convertList(List<Lancamento> lancamentos) {
+	private List<ReleasesDTO> convertList(List<Release> lancamentos) {
 		List<ReleasesDTO> lancamentosDTOs = new LinkedList<>();
 		lancamentos.forEach( lancamento -> {
 			lancamentosDTOs.add(ReleasesDTO.builder()
@@ -157,16 +160,16 @@ public class ReleasesController {
 					.value(lancamento.getValor())
 					.mouth(lancamento.getMes())
 					.year(lancamento.getAno())
-					.status(lancamento.getStatus().name())
-					.type(lancamento.getTipo().name())
+					.status(lancamento.getStatus())
+					.type(lancamento.getTipo())
 					.userId(lancamento.getUsuario().getId())
 					.build());
 		});
 		return lancamentosDTOs;
 	}
 	
-	private Lancamento converter(ReleasesDTO dto) {
-		Lancamento lancamento = new Lancamento();
+	private Release converter(ReleasesDTO dto) {
+		Release lancamento = new Release();
 		lancamento.setId(dto.getId());
 		lancamento.setDescricao(dto.getDescription());
 		lancamento.setAno(dto.getYear());
@@ -180,9 +183,9 @@ public class ReleasesController {
 		lancamento.setUsuario(usuario);
 		
 		if(dto.getType() != null)
-			lancamento.setTipo(TipoLancamentoEnum.valueOf(dto.getType()));
+			lancamento.setTipo(dto.getType());
 		if(dto.getStatus() != null)
-			lancamento.setStatus(StatusLancamentoEnum.valueOf(dto.getStatus()));
+			lancamento.setStatus(dto.getStatus());
 		
 		return lancamento;
 	}

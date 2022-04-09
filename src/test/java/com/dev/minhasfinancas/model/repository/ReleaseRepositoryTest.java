@@ -15,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.dev.minhasfinancas.model.entity.Lancamento;
+import com.dev.minhasfinancas.model.entity.Release;
 import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
 import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
 
@@ -23,7 +23,7 @@ import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
 @ActiveProfiles("test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-public class LancamentoRepositoryTest {
+public class ReleaseRepositoryTest {
 
 	@Autowired
 	LancamentoRepository repository;
@@ -33,7 +33,7 @@ public class LancamentoRepositoryTest {
 	
 	@Test
 	public void deveSalvarUmLancamento() {
-		Lancamento lancamento = criarLancamento();
+		Release lancamento = criarLancamento();
 		lancamento = repository.save(lancamento);
 		
 		assertThat(lancamento.getId()).isNotNull();
@@ -41,18 +41,18 @@ public class LancamentoRepositoryTest {
 
 	@Test
 	public void deveDeletarUmLancamento() {
-		Lancamento lancamento = criarEPersistirLancamento();
+		Release lancamento = criarEPersistirLancamento();
 		
-		lancamento = entityManager.find(Lancamento.class, lancamento.getId());
+		lancamento = entityManager.find(Release.class, lancamento.getId());
 		repository.delete(lancamento);
 		
-		Lancamento lancamentoInexistente = entityManager.find(Lancamento.class, lancamento.getId());
+		Release lancamentoInexistente = entityManager.find(Release.class, lancamento.getId());
 		assertThat(lancamentoInexistente).isNull();
 	}
 	
 	@Test
 	public void deveAtualizarUmLancamento() {
-		Lancamento lancamento = criarEPersistirLancamento();
+		Release lancamento = criarEPersistirLancamento();
 		
 		lancamento.setAno(2018);
 		lancamento.setDescricao("Teste atualizar");
@@ -60,7 +60,7 @@ public class LancamentoRepositoryTest {
 		
 		repository.save(lancamento);
 		
-		Lancamento lancamentoAtualizado = entityManager.find(Lancamento.class, lancamento.getId());
+		Release lancamentoAtualizado = entityManager.find(Release.class, lancamento.getId());
 		assertThat(lancamentoAtualizado.getAno()).isEqualTo(2018);
 		assertThat(lancamentoAtualizado.getDescricao()).isEqualTo("Teste atualizar");
 		assertThat(lancamentoAtualizado.getStatus()).isEqualTo(StatusLancamentoEnum.CANCELADO);
@@ -69,21 +69,21 @@ public class LancamentoRepositoryTest {
 	
 	@Test
 	public void deveBuscarUmLancamentoPorId() {
-		Lancamento lancamento = criarEPersistirLancamento();
+		Release lancamento = criarEPersistirLancamento();
 		
-		Optional<Lancamento> lancamentoEncontrado = repository.findById(lancamento.getId());
+		Optional<Release> lancamentoEncontrado = repository.findById(lancamento.getId());
 		
 		assertThat(lancamentoEncontrado.isPresent()).isTrue();
 	}
 
-	private Lancamento criarEPersistirLancamento() {
-		Lancamento lancamento = criarLancamento();
+	private Release criarEPersistirLancamento() {
+		Release lancamento = criarLancamento();
 		entityManager.persist(lancamento);
 		return lancamento;
 	}
 	
-	public static Lancamento criarLancamento() {
-		return Lancamento.builder()
+	public static Release criarLancamento() {
+		return Release.builder()
 										  .ano(2019)
 										  .mes(1)
 										  .descricao("lancamento qualquer")

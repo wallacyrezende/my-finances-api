@@ -2,6 +2,8 @@ package com.dev.minhasfinancas.api.dto;
 
 import java.math.BigDecimal;
 
+import com.dev.minhasfinancas.model.enums.StatusLancamentoEnum;
+import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,6 @@ public class ReleasesDTO {
 	private Integer year;
 	private BigDecimal value;
 	private Long userId;
-	private String type;
-	private String status;
+	private TipoLancamentoEnum type;
+	private StatusLancamentoEnum status;
 }

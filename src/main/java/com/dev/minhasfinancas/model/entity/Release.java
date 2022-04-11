@@ -46,7 +46,7 @@ public class Release {
 	@Column
 	private Integer ano;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "id_usuario")
 	private Usuario usuario;
 	

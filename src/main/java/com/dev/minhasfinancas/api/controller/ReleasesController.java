@@ -90,9 +90,9 @@ public class ReleasesController {
 		}
 	}
 	
-	@PutMapping("{id}")
-	public ResponseEntity update(@PathVariable("id") Long id, @RequestBody ReleasesDTO dto) {
-		return service.obterPorId(id).map( entity -> {
+	@PutMapping
+	public ResponseEntity update( @RequestBody ReleasesDTO dto ) {
+		return service.obterPorId(dto.getId()).map( entity -> {
 			
 			try {
 				Release lancamento = converter(dto);

@@ -10,6 +10,7 @@ import com.dev.minhasfinancas.model.enums.TipoLancamentoEnum;
 import com.dev.minhasfinancas.model.repository.LancamentoRepository;
 import com.dev.minhasfinancas.service.LancamentoService;
 import com.dev.minhasfinancas.service.UsuarioService;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,6 +44,7 @@ public class LancamentoServiceImpl implements LancamentoService {
 	public Release salvar(Release lancamento) {
 		validar(lancamento);
 		lancamento.setStatus(StatusLancamentoEnum.PENDENTE);
+		lancamento.setDataCadastro(LocalDate.now());
 		return repository.save(lancamento);
 	}
 
@@ -70,8 +75,12 @@ public class LancamentoServiceImpl implements LancamentoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Optional<Release>> lastReleases(Long idUsuario) {
-		return repository.lastReleases(idUsuario);
+	public List<ReleasesDTO> lastReleases(Long userId) {
+		List<ReleasesDTO> releases = new LinkedList<>();
+		repository.lastReleases(userId).forEach( release -> {
+			releases.add(convert(release.get()));
+		});
+		return releases;
 	}
 
 	@Override
@@ -144,6 +153,20 @@ public class LancamentoServiceImpl implements LancamentoService {
 			despesas = BigDecimal.ZERO;
 		
 		return receitas.subtract(despesas);
+	}
+
+	private ReleasesDTO convert(Release lancamento) {
+		return ReleasesDTO.builder()
+				.id(lancamento.getId())
+				.description(lancamento.getDescricao())
+				.value(lancamento.getValor())
+				.mouth(lancamento.getMes())
+				.year(lancamento.getAno())
+				.status(lancamento.getStatus())
+				.type(lancamento.getTipo())
+				.userId(lancamento.getUsuario().getId())
+				.build();
+
 	}
 
 }

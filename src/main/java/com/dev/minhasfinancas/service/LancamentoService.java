@@ -28,7 +28,7 @@ public interface LancamentoService {
 	
 	BigDecimal obterSaldoPorUsuario(Long id);
 
-	List<Optional<Release>> lastReleases(Long idUsuario);
+	List<ReleasesDTO> lastReleases(Long userId);
 
 	BigDecimal getExtractByReleaseType(Long userId, TipoLancamentoEnum releaseType);
 

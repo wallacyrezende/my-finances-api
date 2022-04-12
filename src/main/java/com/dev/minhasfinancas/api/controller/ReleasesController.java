@@ -64,12 +64,8 @@ public class ReleasesController {
 	}
 
 	@GetMapping("/last-releases/{userId}")
-	public ResponseEntity ultimosLancamentos( @PathVariable("userId") @NonNull Long userId ) {
-		List<ReleasesDTO> releases = new LinkedList<>();
-		service.lastReleases(userId).forEach(release -> {
-			releases.add(converter(release.get()));
-		});
-		return ResponseEntity.ok(releases);
+	public ResponseEntity lastReleases( @PathVariable("userId") @NonNull Long userId ) {
+		return ResponseEntity.ok(service.lastReleases(userId));
 	}
 
 	@GetMapping("{userId}/releases-paginated")

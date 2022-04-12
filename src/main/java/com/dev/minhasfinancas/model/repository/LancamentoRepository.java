@@ -26,8 +26,8 @@ public interface LancamentoRepository extends JpaRepository<Release, Long> {
             @Param("tipo") TipoLancamentoEnum tipo,
             @Param("status") StatusLancamentoEnum status);
 
-    @Query(value = "select l from Release l join l.usuario u where u.id = :idUsuario order by l.id desc")
-    List<Optional<Release>> lastReleases(@Param("idUsuario") Long idUsuario);
+    @Query(value = "select l from Release l join l.usuario u where u.id = :userId order by l.id desc")
+    List<Optional<Release>> lastReleases(@Param("userId") Long userId);
 
     @Query(value = SELECT_COLUMNS_FIND_ALL + "from Release l where " + WHERE_FIND_ALL,
             countQuery = "select count(l.id) from Release l where " + WHERE_FIND_ALL)

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,14 +21,16 @@ public interface LancamentoRepository extends JpaRepository<Release, Long> {
     String SELECT_COLUMNS_FIND_ALL = " select new com.dev.minhasfinancas.api.dto.ReleasesDTO(l.id, l.descricao, l.mes, l.ano, l.valor, l.usuario.id, l.tipo, l.status) ";
     String WHERE_FIND_ALL = " l.usuario.id = :userId ";
 
-    @Query(value = "select sum(l.valor) from Release l join l.usuario u where " + WHERE_RELEASE_TYPE_USER_AND_STATUS)
+    @Query(value = "select sum(l.valor) from Release l join l.usuario u where l.dataCadastro between :startDate and :endDate and " + WHERE_RELEASE_TYPE_USER_AND_STATUS)
     BigDecimal getBalanceByReleaseTypeUserAndStatus(
             @Param("idUsuario") Long idUsuario,
             @Param("tipo") TipoLancamentoEnum tipo,
-            @Param("status") StatusLancamentoEnum status);
+            @Param("status") StatusLancamentoEnum status,
+            @Param("startDate")  LocalDate startDate,
+            @Param("endDate")  LocalDate endDate);
 
-    @Query(value = "select l from Release l join l.usuario u where u.id = :userId order by l.id desc")
-    List<Optional<Release>> lastReleases(@Param("userId") Long userId);
+    @Query(value = "select l from Release l join l.usuario u where u.id = :userId and l.dataCadastro between :startDate and :endDate order by l.id desc")
+    List<Optional<Release>> lastReleases(@Param("userId") Long userId, @Param("startDate")  LocalDate startDate, @Param("endDate")  LocalDate endDate);
 
     @Query(value = SELECT_COLUMNS_FIND_ALL + "from Release l where " + WHERE_FIND_ALL,
             countQuery = "select count(l.id) from Release l where " + WHERE_FIND_ALL)

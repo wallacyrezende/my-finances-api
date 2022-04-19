@@ -77,7 +77,7 @@ public class LancamentoServiceImpl implements LancamentoService {
 	@Transactional(readOnly = true)
 	public List<ReleasesDTO> lastReleases(Long userId) {
 		List<ReleasesDTO> releases = new LinkedList<>();
-		repository.lastReleases(userId).forEach( release -> {
+		repository.lastReleases(userId, LocalDate.now().minusDays(30), LocalDate.now()).forEach( release -> {
 			releases.add(convert(release.get()));
 		});
 		return releases;
@@ -86,7 +86,7 @@ public class LancamentoServiceImpl implements LancamentoService {
 	@Override
 	@Transactional
 	public BigDecimal getExtractByReleaseType(Long userId, TipoLancamentoEnum releaseType) {
-		BigDecimal extract = repository.getBalanceByReleaseTypeUserAndStatus(userId, releaseType, StatusLancamentoEnum.EFETIVADO);
+		BigDecimal extract = repository.getBalanceByReleaseTypeUserAndStatus(userId, releaseType, StatusLancamentoEnum.EFETIVADO, LocalDate.now().minusDays(30), LocalDate.now());
 		return (extract == null) ? BigDecimal.ZERO : extract;
 	}
 
@@ -143,8 +143,8 @@ public class LancamentoServiceImpl implements LancamentoService {
 	@Override
 	@Transactional(readOnly = true)
 	public BigDecimal obterSaldoPorUsuario(Long id) {
-		BigDecimal receitas = repository.getBalanceByReleaseTypeUserAndStatus(id, TipoLancamentoEnum.RECEITA, StatusLancamentoEnum.EFETIVADO);
-		BigDecimal despesas = repository.getBalanceByReleaseTypeUserAndStatus(id, TipoLancamentoEnum.DESPESA, StatusLancamentoEnum.EFETIVADO);
+		BigDecimal receitas = repository.getBalanceByReleaseTypeUserAndStatus(id, TipoLancamentoEnum.RECEITA, StatusLancamentoEnum.EFETIVADO, LocalDate.now().minusDays(30), LocalDate.now());
+		BigDecimal despesas = repository.getBalanceByReleaseTypeUserAndStatus(id, TipoLancamentoEnum.DESPESA, StatusLancamentoEnum.EFETIVADO, LocalDate.now().minusDays(30), LocalDate.now());
 		
 		if(receitas == null)
 			receitas = BigDecimal.ZERO;

@@ -95,7 +95,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         Page<ReleasesDTO> pageReleases = Page.empty();
         Optional<User> user = userService.getById(userId);
         if (user.isPresent()) {
-            Pageable pageable = PageRequest.of(page, size, Sort.by("ano", "mes", "id").descending());
+            Pageable pageable = PageRequest.of(page, size, Sort.by("releaseDate", "id").descending());
             pageReleases = repository.findAll(user.get().getId(), pageable);
         }
         return new PaginatedResponseDTO<ReleasesDTO>(pageReleases.getContent(), pageReleases.getTotalElements());
@@ -113,14 +113,6 @@ public class ReleaseServiceImpl implements ReleaseService {
             throw new BusinessException("Informe uma Descrição válida.");
         }
 
-        if (release.getMes() == null || release.getMes() < 1 || release.getMes() > 12) {
-            throw new BusinessException("Informe um Mês válido.");
-        }
-
-        if (release.getAno() == null || release.getAno().toString().length() != 4) {
-            throw new BusinessException("Informe um Ano válido.");
-        }
-
         if (release.getUser() == null || release.getUser().getId() == null) {
             throw new BusinessException("Informe um Usuário.");
         }
@@ -131,6 +123,10 @@ public class ReleaseServiceImpl implements ReleaseService {
 
         if (release.getType() == null) {
             throw new BusinessException("Informe um Tipo de lançamento.");
+        }
+
+        if (release.getReleaseDate() == null) {
+            throw new BusinessException("Informe uma Data para o lançamento.");
         }
     }
 
@@ -156,16 +152,17 @@ public class ReleaseServiceImpl implements ReleaseService {
         return receitas.subtract(despesas);
     }
 
-    private ReleasesDTO convert(Release lancamento) {
+    private ReleasesDTO convert(Release release) {
         return ReleasesDTO.builder()
-                .id(lancamento.getId())
-                .description(lancamento.getDescription())
-                .value(lancamento.getValue())
-                .mouth(lancamento.getMes())
-                .year(lancamento.getAno())
-                .status(lancamento.getStatus())
-                .type(lancamento.getType())
-                .userId(lancamento.getUser().getId())
+                .id(release.getId())
+                .description(release.getDescription())
+                .value(release.getValue())
+                .mouth(release.getMes())
+                .year(release.getAno())
+                .status(release.getStatus())
+                .type(release.getType())
+                .releaseDate(release.getReleaseDate())
+                .userId(release.getUser().getId())
                 .build();
     }
 }

@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface ReleaseRepository extends JpaRepository<Release, Long> {
 
     String WHERE_RELEASE_TYPE_USER_AND_STATUS = " u.id = :userId and l.type = :type and l.status = :status group by u ";
-    String SELECT_COLUMNS_FIND_ALL = " select new com.dev.finances.api.dto.ReleasesDTO(l.id, l.description, l.mes, l.ano, l.value, l.user.id, l.type, l.status) ";
+    String SELECT_COLUMNS_FIND_ALL = " select new com.dev.finances.api.dto.ReleasesDTO(l.id, l.description, l.mes, l.ano, l.value, l.user.id, l.type, l.status, l.releaseDate) ";
     String WHERE_FIND_ALL = " l.user.id = :userId ";
 
     @Query(value = "select sum(l.value) from Release l join l.user u where l.createAt between :startDate and :endDate and " + WHERE_RELEASE_TYPE_USER_AND_STATUS)

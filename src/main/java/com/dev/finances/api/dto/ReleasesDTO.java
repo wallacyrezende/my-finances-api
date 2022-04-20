@@ -1,6 +1,7 @@
 package com.dev.finances.api.dto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.dev.finances.model.enums.ReleaseStatusEnum;
 import com.dev.finances.model.enums.ReleaseTypeEnum;
@@ -23,4 +24,5 @@ public class ReleasesDTO {
 	private Long userId;
 	private ReleaseTypeEnum type;
 	private ReleaseStatusEnum status;
+	private Date releaseDate;
 }

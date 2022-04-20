@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 
 
 @Entity
@@ -39,10 +40,10 @@ public class Release {
 	@Column(nullable = false)
 	private String description;
 
-	@Column(nullable = false)
+	@Column
 	private Integer mes;
 
-	@Column(nullable = false)
+	@Column
 	private Integer ano;
 
 	@ManyToOne
@@ -57,8 +58,7 @@ public class Release {
 	private LocalDate createAt;
 
 	@Column(nullable = false)
-	@Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
-	private LocalDate releaseDate;
+	private Date releaseDate;
 
 	@Column
 	@Enumerated(value = EnumType.STRING)

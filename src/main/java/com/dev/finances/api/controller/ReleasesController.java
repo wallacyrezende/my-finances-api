@@ -142,23 +142,24 @@ public class ReleasesController {
                 .year(release.getAno())
                 .status(release.getStatus())
                 .type(release.getType())
+                .releaseDate(release.getReleaseDate())
                 .userId(release.getUser().getId())
                 .build();
 
     }
 
     private Release converter(ReleasesDTO dto) {
+        User user = userService
+                .getById(dto.getUserId())
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado para o Id informado."));
+
         Release release = new Release();
         release.setId(dto.getId());
         release.setDescription(dto.getDescription());
         release.setAno(dto.getYear());
         release.setMes(dto.getMouth());
         release.setValue(dto.getValue());
-
-        User user = userService
-                .getById(dto.getUserId())
-                .orElseThrow(() -> new BusinessException("Usuário não encontrado para o Id informado."));
-
+        release.setReleaseDate(dto.getReleaseDate());
         release.setUser(user);
 
         if (dto.getType() != null)

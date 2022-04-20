@@ -30,37 +30,41 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Release {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Long id;
-	
-	@Column
+
+	@Column(nullable = false)
 	private String description;
-	
-	@Column
+
+	@Column(nullable = false)
 	private Integer mes;
-	
-	@Column
+
+	@Column(nullable = false)
 	private Integer ano;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
-	
+
 	@Column
 	private BigDecimal value;
-	
-	@Column(name = "create_at")
+
+	@Column
 	@Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
 	private LocalDate createAt;
-	
-	@Column(name = "type")
+
+	@Column(nullable = false)
+	@Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
+	private LocalDate releaseDate;
+
+	@Column
 	@Enumerated(value = EnumType.STRING)
 	private ReleaseTypeEnum type;
-	
-	@Column(name = "status")
+
+	@Column
 	@Enumerated(value = EnumType.STRING)
 	private ReleaseStatusEnum status;
 }

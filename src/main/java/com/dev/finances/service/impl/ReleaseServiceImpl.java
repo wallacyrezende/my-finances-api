@@ -7,9 +7,10 @@ import com.dev.finances.model.entity.Release;
 import com.dev.finances.model.entity.User;
 import com.dev.finances.model.enums.ReleaseStatusEnum;
 import com.dev.finances.model.enums.ReleaseTypeEnum;
-import com.dev.finances.model.repository.ReleaseRepository;
+import com.dev.finances.repository.ReleaseRepository;
 import com.dev.finances.service.ReleaseService;
 import com.dev.finances.service.UserService;
+import com.dev.finances.utils.DateUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,7 +162,7 @@ public class ReleaseServiceImpl implements ReleaseService {
                 .year(release.getAno())
                 .status(release.getStatus())
                 .type(release.getType())
-                .releaseDate(release.getReleaseDate())
+                .releaseDate(DateUtils.dateFormatDefault(release.getReleaseDate()))
                 .userId(release.getUser().getId())
                 .build();
     }

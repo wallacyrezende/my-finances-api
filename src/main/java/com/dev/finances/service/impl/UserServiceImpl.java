@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dev.finances.exception.AuthenticationException;
 import com.dev.finances.exception.BusinessException;
 import com.dev.finances.model.entity.User;
-import com.dev.finances.model.repository.UserRepository;
+import com.dev.finances.repository.UserRepository;
 import com.dev.finances.service.UserService;
 
 @Service

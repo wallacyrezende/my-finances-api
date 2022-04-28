@@ -22,7 +22,7 @@ import com.dev.finances.exception.BusinessException;
 import com.dev.finances.model.entity.Release;
 import com.dev.finances.model.entity.User;
 import com.dev.finances.model.enums.ReleaseStatusEnum;
-import com.dev.finances.model.repository.ReleaseRepository;
+import com.dev.finances.repository.ReleaseRepository;
 import com.dev.finances.model.repository.ReleaseRepositoryTest;
 import com.dev.finances.service.impl.ReleaseServiceImpl;
 

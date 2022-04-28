@@ -2,6 +2,7 @@ package com.dev.finances.model.repository;
 
 import java.util.Optional;
 
+import com.dev.finances.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,7 @@ import com.dev.finances.model.entity.User;
 public class UserRepositoryTest {
 	
 	@Autowired
-	UserRepository repository;
+    UserRepository repository;
 	
 	@Autowired
 	TestEntityManager entityManager;

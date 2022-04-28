@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+
+import com.dev.finances.repository.ReleaseRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ import com.dev.finances.model.enums.ReleaseTypeEnum;
 public class ReleaseRepositoryTest {
 
 	@Autowired
-	ReleaseRepository repository;
+    ReleaseRepository repository;
 
 	@Autowired
 	TestEntityManager entityManager;

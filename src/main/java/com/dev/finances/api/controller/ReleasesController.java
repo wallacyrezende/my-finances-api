@@ -7,6 +7,7 @@ import com.dev.finances.model.entity.User;
 import com.dev.finances.model.enums.ReleaseStatusEnum;
 import com.dev.finances.service.ReleaseService;
 import com.dev.finances.service.UserService;
+import com.dev.finances.utils.DateUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -142,7 +143,7 @@ public class ReleasesController {
                 .year(release.getAno())
                 .status(release.getStatus())
                 .type(release.getType())
-                .releaseDate(release.getReleaseDate())
+                .releaseDate(DateUtils.dateFormatDefault(release.getReleaseDate()))
                 .userId(release.getUser().getId())
                 .build();
 
@@ -159,7 +160,7 @@ public class ReleasesController {
         release.setAno(dto.getYear());
         release.setMes(dto.getMouth());
         release.setValue(dto.getValue());
-        release.setReleaseDate(dto.getReleaseDate());
+        release.setReleaseDate(DateUtils.dateFormatDefault(dto.getReleaseDate()));
         release.setUser(user);
 
         if (dto.getType() != null)

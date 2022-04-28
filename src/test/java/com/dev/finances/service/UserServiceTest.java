@@ -17,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.dev.finances.exception.AuthenticationException;
 import com.dev.finances.exception.BusinessException;
 import com.dev.finances.model.entity.User;
-import com.dev.finances.model.repository.UserRepository;
+import com.dev.finances.repository.UserRepository;
 import com.dev.finances.service.impl.UserServiceImpl;
 
 @ExtendWith(SpringExtension.class)

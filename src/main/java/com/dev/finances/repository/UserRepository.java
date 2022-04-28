@@ -1,4 +1,4 @@
- package com.dev.finances.model.repository;
+ package com.dev.finances.repository;
 
 import java.util.Optional;
 

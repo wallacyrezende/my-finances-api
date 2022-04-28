@@ -1,4 +1,4 @@
-package com.dev.finances.model.repository;
+package com.dev.finances.repository;
 
 import com.dev.finances.api.dto.ReleasesDTO;
 import com.dev.finances.model.entity.Release;

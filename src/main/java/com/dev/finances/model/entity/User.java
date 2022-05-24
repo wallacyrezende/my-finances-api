@@ -43,11 +43,10 @@ public class User {
     private String email;
 
     @Column
-    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role",
+    @JoinTable(name = "user_role", schema = "financas",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )

@@ -42,6 +42,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public User findByEmail(String email) {
+		Optional<User> user = repository.findByEmail(email);
+
+		if(!user.isPresent()) {
+			throw new BusinessException("Usuário não encontrado para o e-mail informado.");
+		}
+		return User.builder()
+				.id(user.get().getId())
+				.name(user.get().getName())
+				.email(user.get().getEmail())
+				.password(user.get().getPassword())
+				.roles(user.get().getRoles())
+				.build();
+	}
+
+	@Override
 	@Transactional
 	public User save(User user) {
 		validateEmail(user.getEmail());
